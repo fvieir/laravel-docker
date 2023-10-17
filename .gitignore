@@ -1,0 +1,3 @@
+data/api/*
+logs/
+.docker/db

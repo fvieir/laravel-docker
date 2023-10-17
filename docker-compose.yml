@@ -1,0 +1,50 @@
+version: '3'
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - 8080:80
+    networks:
+      - internal
+    volumes:
+      - ./data/:/var/www/html/
+      - ./logs/nginx:/var/log/nginx
+    container_name: nginx  
+  php:
+    build: 
+      context: .
+      dockerfile: php/Dockerfile
+    networks:
+      - internal
+    volumes:
+      - ./data/:/var/www/html/
+      - ./logs/php.log:/var/log/fpm-php.www.log
+    container_name: php
+  mysql:
+    image: mysql:8
+    restart: always
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: locashop
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./.docker/db:/var/lib/mysql"
+  redis:
+    build:
+      context: .
+      dockerfile: redis/Dockerfile
+    restart: always
+    container_name: redis
+    ports:
+      - 6379
+    volumes:
+      - "./logs/redis:/var/log/redis"
+networks:
+  internal:
+    driver: bridge
